@@ -35,7 +35,6 @@
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="10" fill="%23c41e3a" opacity="0.8"/><circle cx="14" cy="14" r="6" fill="%23d4af37"/><text x="14" y="18" text-anchor="middle" fill="white" font-size="14">🎭</text></svg>') 14 14, pointer;
         }
 
-        /* Background image */
         body::before {
             content: '';
             position: fixed;
@@ -61,7 +60,6 @@
             z-index: -1;
         }
 
-        /* Side character images */
         .sparkle-left, .sparkle-right {
             position: fixed;
             height: 80vh;
@@ -89,7 +87,6 @@
             z-index: 1;
         }
 
-        /* Floating cherry blossoms */
         @keyframes float {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(180deg); }
@@ -466,6 +463,89 @@
             font-size: 1.5rem;
         }
 
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .sparkle-effect {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: var(--sparkle-gold);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkle 2s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--sparkle-gold);
+        }
+
+        .easter-egg-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, rgba(196, 30, 58, 0.98), rgba(26, 10, 15, 0.98));
+            border: 3px solid var(--sparkle-gold);
+            border-radius: 30px;
+            padding: 3rem;
+            z-index: 10000;
+            box-shadow: 0 0 100px rgba(212, 175, 55, 0.6);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .easter-egg-modal.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .easter-egg-modal h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--sparkle-gold);
+        }
+
+        .easter-egg-modal p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .easter-egg-close {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--sparkle-red), #8b1a2e);
+            color: white;
+            border: 2px solid var(--sparkle-gold);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .easter-egg-close:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(196, 30, 58, 0.6);
+        }
+
+        .easter-egg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .easter-egg-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.5rem;
@@ -497,27 +577,9 @@
                 display: none;
             }
         }
-
-        /* Sparkles animation */
-        @keyframes sparkle {
-            0%, 100% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1); }
-        }
-
-        .sparkle-effect {
-            position: fixed;
-            width: 4px;
-            height: 4px;
-            background: var(--sparkle-gold);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: sparkle 2s ease-in-out infinite;
-            box-shadow: 0 0 10px var(--sparkle-gold);
-        }
     </style>
 </head>
 <body>
-    <!-- Side Sparkle images -->
     <img src="https://files.catbox.moe/lwnvsi.png" 
          alt="" 
          class="sparkle-left"
@@ -526,6 +588,16 @@
          alt="" 
          class="sparkle-right"
          onerror="this.style.display='none'">
+
+    <div class="easter-egg-overlay" id="easterEggOverlay"></div>
+    <div class="easter-egg-modal" id="easterEggModal">
+        <h2>Secret Discovered!</h2>
+        <p>You've found the hidden performance!</p>
+        <p style="font-style: italic; font-size: 1rem; color: var(--sparkle-pink);">
+            "A true fan knows every scene, every line and you're my biggest fan... As much as I am yours." -Your Superstar
+        </p>
+        <button class="easter-egg-close" onclick="closeEasterEgg()">Kneel.</button>
+    </div>
 
     <header>
         <nav>
@@ -546,7 +618,7 @@
         <img src="https://static.zerochan.net/Sparkle.1024.4598372.webp" alt="Profile" class="sparkle-portrait" onerror="this.style.background='linear-gradient(135deg, var(--sparkle-red), var(--sparkle-pink))'; this.alt='✨🎭✨'">
         <h1>✨ amonodrama ✨</h1>
         <p class="subtitle">Developer & Scripter</p>
-        <p class="tagline">"Best scriptwriter ever lived."</p>
+        <p class="tagline">"Best scripwriter ever lived."</p>
         <a href="#projects" class="cta-button">Check out my projects.</a>
     </section>
 
@@ -596,13 +668,11 @@
                     </svg>
                     <span>Email</span>
                 </a>
-                </a>
             </div>
         </div>
     </section>
 
     <script>
-        // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -613,7 +683,6 @@
             });
         });
 
-        // Active nav link
         const sections = document.querySelectorAll('section');
         const navLinks = document.querySelectorAll('.nav-links a');
 
@@ -634,7 +703,6 @@
             });
         });
 
-        // Fetch GitHub repositories
         async function fetchGitHubRepos() {
             const username = 'amonodrama';
             const container = document.getElementById('projects-container');
@@ -688,10 +756,8 @@
             }
         }
 
-        // Load repos when page loads
         fetchGitHubRepos();
 
-        // Create floating cherry blossoms
         function createCherryBlossom() {
             const blossom = document.createElement('div');
             blossom.className = 'cherry-blossom';
@@ -706,7 +772,6 @@
             createCherryBlossom();
         }
 
-        // Create sparkle effects
         function createSparkle(x, y) {
             const sparkle = document.createElement('div');
             sparkle.className = 'sparkle-effect';
@@ -718,7 +783,6 @@
             setTimeout(() => sparkle.remove(), 2000);
         }
 
-        // Random sparkles
         setInterval(() => {
             if (Math.random() > 0.7) {
                 createSparkle(
@@ -728,7 +792,6 @@
             }
         }, 500);
 
-        // Mouse follow sparkles
         let lastSparkle = Date.now();
         document.addEventListener('mousemove', (e) => {
             const now = Date.now();
@@ -737,6 +800,73 @@
                 lastSparkle = now;
             }
         });
+
+        let konamiCode = [];
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        
+        document.addEventListener('keydown', (e) => {
+            konamiCode.push(e.key);
+            konamiCode = konamiCode.slice(-10);
+            
+            if (konamiCode.join(',') === konamiSequence.join(',')) {
+                showEasterEgg();
+                konamiCode = [];
+            }
+        });
+
+        let logoClicks = 0;
+        let logoClickTimer;
+        document.querySelector('.logo').addEventListener('click', () => {
+            logoClicks++;
+            clearTimeout(logoClickTimer);
+            
+            if (logoClicks === 3) {
+                showEasterEgg();
+                logoClicks = 0;
+            }
+            
+            logoClickTimer = setTimeout(() => {
+                logoClicks = 0;
+            }, 500);
+        });
+
+        let typedKeys = '';
+        document.addEventListener('keypress', (e) => {
+            typedKeys += e.key;
+            typedKeys = typedKeys.slice(-7);
+            
+            if (typedKeys === 'selina') {
+                showEasterEgg();
+                typedKeys = '';
+            }
+        });
+
+        function showEasterEgg() {
+            const modal = document.getElementById('easterEggModal');
+            const overlay = document.getElementById('easterEggOverlay');
+            
+            modal.classList.add('show');
+            overlay.classList.add('show');
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    createSparkle(
+                        Math.random() * window.innerWidth,
+                        Math.random() * window.innerHeight
+                    );
+                }, i * 50);
+            }
+        }
+
+        function closeEasterEgg() {
+            const modal = document.getElementById('easterEggModal');
+            const overlay = document.getElementById('easterEggOverlay');
+            
+            modal.classList.remove('show');
+            overlay.classList.remove('show');
+        }
+
+        document.getElementById('easterEggOverlay').addEventListener('click', closeEasterEgg);
     </script>
 </body>
 </html>
