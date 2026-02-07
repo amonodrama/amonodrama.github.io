@@ -245,13 +245,9 @@ function initAnimeAnimations() {
             }
         }
         
-        if (DISCORD_USER_ID !== 'YOUR_DISCORD_USER_ID') {
+        if (DISCORD_USER_ID !== '') {
             checkDiscordStatus();
             setInterval(checkDiscordStatus, 5000);
-        } else {
-            document.getElementById('discordBadge').textContent = 'CONFIG NEEDED';
-            document.getElementById('discordBadge').style.color = '#ff0040';
-            document.getElementById('trackArtist').textContent = 'Configure Discord User ID first';
         }
 
         function showSection(sectionName) {
