@@ -1,5 +1,4 @@
 function initAnimeAnimations() {
-
             anime({
                 targets: '.terminal-box',
                 opacity: [0, 1],
@@ -576,6 +575,7 @@ function initAnimeAnimations() {
                             </div>
                         </div>
                     </div>
+                                </div>
                 `).join('');
             
             anime({
@@ -626,4 +626,5 @@ function formatGuestbookDate(timestamp) {
         if (window.location.hash === '#guestbook') {
             loadGuestbookEntries();
         }
+
 
