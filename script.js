@@ -526,9 +526,17 @@ function initAnimeAnimations() {
                     name: "Monodrama",
                     website: "",
                     avatar: "https://cdn.discordapp.com/avatars/315590911776260096/             a_b6c7162398668920d7e33bde40246642.gif?size=256",
-                    message: "Welcome to my guestbook, feel free to leave a message here or your cool               website for people to explore.",
+                    message: "Welcome to my guestbook, feel free to leave a message here or your cool website for people to explore.",
                     timestamp: 1770363607178
-                }
+                },
+                {
+                    name: "Rose",
+                    website: "https://rosely.me",
+                    avatar: "https://rosely.me/lain.gif",
+                    message: "Fucking beautiful website. Good job.",
+                    timestamp: 1770425842574
+               }
+                        
             ];
 
             if (entries.length === 0) {
@@ -618,3 +626,4 @@ function formatGuestbookDate(timestamp) {
         if (window.location.hash === '#guestbook') {
             loadGuestbookEntries();
         }
+
