@@ -95,16 +95,137 @@ function initAnimeAnimations() {
 
         window.addEventListener('DOMContentLoaded', function() {
             initAnimeAnimations();
+            loadRecentTracks();
+            
+            setInterval(() => {
+                if (recentTracks.length > 0) {
+                    updateRecentTracksDisplay();
+                }
+            }, 60000); 
         });
 
         const DISCORD_USER_ID = '315590911776260096';
         
         let spotifyData = null;
+        let recentTracks = [];
+        const MAX_RECENT_TRACKS = 5;
+        
+        function loadRecentTracks() {
+            try {
+                const saved = localStorage.getItem('spotifyRecentTracks');
+                if (saved) {
+                    recentTracks = JSON.parse(saved);
+                    updateRecentTracksDisplay();
+                }
+            } catch (error) {
+                console.error('Error loading recent tracks:', error);
+                recentTracks = [];
+            }
+        }
+        
+        function saveRecentTracks() {
+            try {
+                localStorage.setItem('spotifyRecentTracks', JSON.stringify(recentTracks));
+            } catch (error) {
+                console.error('Error saving recent tracks:', error);
+            }
+        }
         
         function formatTime(ms) {
             const minutes = Math.floor(ms / 60000);
             const seconds = Math.floor((ms % 60000) / 1000);
             return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function addToRecentTracks(spotify) {
+            if (!spotify || !spotify.song) return;
+            
+            const trackId = `${spotify.song}-${spotify.artist}`;
+            const existingIndex = recentTracks.findIndex(t => `${t.song}-${t.artist}` === trackId);
+            
+            if (existingIndex === -1) {
+                const track = {
+                    song: spotify.song,
+                    artist: spotify.artist,
+                    album: spotify.album,
+                    albumArt: spotify.album_art_url,
+                    trackId: spotify.track_id,
+                    timestamp: Date.now()
+                };
+                
+                recentTracks.unshift(track);
+                
+                if (recentTracks.length > MAX_RECENT_TRACKS) {
+                    recentTracks = recentTracks.slice(0, MAX_RECENT_TRACKS);
+                }
+                
+                saveRecentTracks();
+                updateRecentTracksDisplay();
+            }
+        }
+        
+        function updateRecentTracksDisplay() {
+            const container = document.getElementById('recentTracks');
+            if (!container) return;
+            
+            if (recentTracks.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-dim); font-size: 0.8rem; padding: 1rem;">
+                        No recent tracks yet
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = recentTracks.map((track, index) => `
+                <div class="recent-track-item" style="
+                    display: flex; 
+                    gap: 0.5rem; 
+                    padding: 0.5rem; 
+                    margin-bottom: 0.5rem; 
+                    background: rgba(0, 0, 0, 0.3); 
+                    border: 1px solid var(--border-color); 
+                    transition: all 0.3s;
+                    cursor: pointer;
+                    opacity: 0;
+                " onmouseover="this.style.background='rgba(255, 0, 128, 0.1)'; this.style.borderColor='var(--primary-pink)'" onmouseout="this.style.background='rgba(0, 0, 0, 0.3)'; this.style.borderColor='var(--border-color)'">
+                    <div style="flex-shrink: 0;">
+                        ${track.albumArt ? 
+                            `<img src="${track.albumArt}" alt="Album" style="width: 40px; height: 40px; object-fit: cover; border: 1px solid var(--border-color);">` :
+                            `<div style="width: 40px; height: 40px; background: rgba(255, 0, 128, 0.1); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;"><span style="font-size: 1.2rem; opacity: 0.5;">♪</span></div>`
+                        }
+                    </div>
+                    <div style="flex: 1; min-width: 0; overflow: hidden;">
+                        <div style="font-size: 0.85rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${track.song}">
+                            ${track.song}
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${track.artist}">
+                            ${track.artist}
+                        </div>
+                    </div>
+                    <div style="flex-shrink: 0; color: var(--text-dim); font-size: 0.7rem; align-self: center;">
+                        ${getTimeAgo(track.timestamp)}
+                    </div>
+                </div>
+            `).join('');
+            
+            anime({
+                targets: '.recent-track-item',
+                opacity: [0, 1],
+                translateX: [-10, 0],
+                delay: anime.stagger(50),
+                duration: 400,
+                easing: 'easeOutQuad'
+            });
+        }
+        
+        function getTimeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            
+            if (seconds < 60) return 'now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
+            return `${Math.floor(seconds / 86400)}d`;
         }
         
         function updateDiscordAvatar(data) {
@@ -163,6 +284,7 @@ function initAnimeAnimations() {
                 }
                 
                 spotifyData = spotify;
+                addToRecentTracks(spotify);
                 
                 anime({
                     targets: '.music-player',
@@ -548,7 +670,6 @@ function initAnimeAnimations() {
             }
 
             entries.sort((a, b) => b.timestamp - a.timestamp);
-
             container.innerHTML = entries.map(entry => `
                 <div class="guestbook-entry" style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); padding: 1rem; margin-bottom: 1rem; position: relative; opacity: 0;">
                     <div style="display: flex; gap: 1rem; align-items: start;">
@@ -626,6 +747,3 @@ function formatGuestbookDate(timestamp) {
         if (window.location.hash === '#guestbook') {
             loadGuestbookEntries();
         }
-
-
-
